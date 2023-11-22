@@ -6,14 +6,6 @@ from ttkbootstrap import Style
 import quiz_backend
 from tkinter import messagebox
 import sys
-import pygame
-
-# Initialize pygame for sound effects
-pygame.init()
-
-# Load sound effects
-correct_sound = pygame.mixer.Sound("correct.wav")  # Replace "correct.wav" with the path to your correct answer sound file
-incorrect_sound = pygame.mixer.Sound("wrong.wav")  # Replace "incorrect.wav" with the path to your incorrect answer sound file
 
 # Initialize progress for each intensity level
 progress = {intensity: {"score": 0, "completed": False} for intensity in quiz_backend.intensity_data.keys()}
@@ -25,22 +17,6 @@ selected_intensity = None  # Initialize the selected intensity variable
 
 # Variable to track whether the quiz has started
 quiz_started = False
-
-# Function to play correct sound
-def play_correct_sound():
-    pygame.mixer.Sound.play(correct_sound)
-
-# Function to play incorrect sound
-def play_incorrect_sound():
-    pygame.mixer.Sound.play(incorrect_sound)
-
-# Initialize progress for each intensity level
-progress = {intensity: {"score": 0, "completed": False} for intensity in quiz_backend.intensity_data.keys()}
-
-# Dictionary to store user scores for each intensity
-user_scores = {intensity: 0 for intensity in quiz_backend.intensity_data.keys()}
-
-selected_intensity = None  # Initialize the selected intensity variable
 
 # Function to hide the Finish button
 def hide_finish_button():
@@ -149,10 +125,8 @@ def check_answer(choice):
         global score
         score += 1
         feedback_label.config(text="Correct!", foreground="green")
-        play_correct_sound()  # Play correct sound
     else:
         feedback_label.config(text="Incorrect!", foreground="red")
-        play_incorrect_sound()  # Play incorrect sound
 
     for button in choice_btns:
         button.config(state="disabled")
