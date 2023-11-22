@@ -1,9 +1,19 @@
+# Import necessary modules
 import tkinter as tk
+from PIL import Image, ImageTk
 from tkinter import ttk
 from ttkbootstrap import Style
 import quiz_backend
 from tkinter import messagebox
 import sys
+import pygame
+
+# Initialize pygame for sound effects
+pygame.init()
+
+# Load sound effects
+correct_sound = pygame.mixer.Sound("correct.wav")  # Replace "correct.wav" with the path to your correct answer sound file
+incorrect_sound = pygame.mixer.Sound("wrong.wav")  # Replace "incorrect.wav" with the path to your incorrect answer sound file
 
 # Initialize progress for each intensity level
 progress = {intensity: {"score": 0, "completed": False} for intensity in quiz_backend.intensity_data.keys()}
@@ -15,6 +25,22 @@ selected_intensity = None  # Initialize the selected intensity variable
 
 # Variable to track whether the quiz has started
 quiz_started = False
+
+# Function to play correct sound
+def play_correct_sound():
+    pygame.mixer.Sound.play(correct_sound)
+
+# Function to play incorrect sound
+def play_incorrect_sound():
+    pygame.mixer.Sound.play(incorrect_sound)
+
+# Initialize progress for each intensity level
+progress = {intensity: {"score": 0, "completed": False} for intensity in quiz_backend.intensity_data.keys()}
+
+# Dictionary to store user scores for each intensity
+user_scores = {intensity: 0 for intensity in quiz_backend.intensity_data.keys()}
+
+selected_intensity = None  # Initialize the selected intensity variable
 
 # Function to hide the Finish button
 def hide_finish_button():
@@ -45,9 +71,7 @@ def start_quiz():
 
     if progress[selected_intensity]["completed"]:
         # If the selected intensity is already completed, show a message and reset the intensity selection.
-        messagebox.showinfo("Intensity Completed", f"You have completed all items for {selected_intensity} intensity.")
         intensity_var.set("new_intensity")
-        hide_finish_button()  # Hide the Finish button when intensity is completed
         return
 
     if quiz_backend.start_quiz(selected_intensity):
@@ -72,25 +96,15 @@ def start_questionnaire(intensity):
     intensity_frame.pack_forget()
 
     # Show the quiz interface elements.
-    qs_label.pack()
+    qs_label.pack(pady=10)
     for button in choice_btns:
-        button.pack()
-    feedback_label.pack()
-    next_btn.pack()
+        button.pack(pady=5)
+    feedback_label.pack(pady=10)
+    next_btn.pack(pady=10)
 
     # Set the selected intensity variable
     selected_intensity = intensity
-
     show_question()
-
-# Function to display completion message
-def display_completion_message(intensity):
-    score = progress[intensity]["score"]
-    total_questions = len(quiz_backend.intensity_data[intensity])
-    message = f"You completed {intensity}, Your score is {score}/{total_questions}"
-
-    # Use after to schedule the messagebox.showinfo after the GUI has updated
-    root.after(1, lambda: messagebox.showinfo(f"{intensity} Quiz Completed", message))
 
 # Function to show the next question
 def show_question():
@@ -120,10 +134,6 @@ def show_question():
 
         # Update the user's score for the completed intensity
         user_scores[selected_intensity] += score
-
-        # Display completion message after resetting the quiz
-        display_completion_message(selected_intensity)
-
         return  # Stop execution here to avoid calling show_question() again
 
     # Increment the question counter only when the user clicks the "Next" button
@@ -139,8 +149,10 @@ def check_answer(choice):
         global score
         score += 1
         feedback_label.config(text="Correct!", foreground="green")
+        play_correct_sound()  # Play correct sound
     else:
         feedback_label.config(text="Incorrect!", foreground="red")
+        play_incorrect_sound()  # Play incorrect sound
 
     for button in choice_btns:
         button.config(state="disabled")
@@ -166,8 +178,6 @@ def reset_quiz():
 
     # Check if the intensity is completed after packing the intensity_frame
     if progress[selected_intensity]["completed"]:
-        # Display completion message after resetting the quiz
-        display_completion_message(selected_intensity)
         show_finish_button()  # Show the Finish button when the intensity is completed
     elif quiz_started:
         show_finish_button()  # Show the Finish button when the quiz has started
@@ -199,6 +209,10 @@ root = tk.Tk()
 root.title("ProgQuiz")
 root.geometry("850x550")  # Set the initial size of the window
 style = Style(theme="flatly")  # Set the ttkbootstrap theme for styling
+
+#Picture Background
+image_path = 'bfg1.jpg'
+img = Image.open(image_path)
 
 # Create a frame for entering the name
 name_frame = ttk.Frame(root)
@@ -249,7 +263,7 @@ qs_label.pack_forget()
 choice_btns = []
 for i in range(4):
     button = ttk.Button(root, command=lambda i=i: check_answer(i))
-    button.pack(pady=5)
+    button.pack(pady=29)
     choice_btns.append(button)
     button.pack_forget()
 
