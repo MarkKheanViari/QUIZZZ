@@ -184,10 +184,6 @@ root.title("ProgQuiz")
 root.geometry("850x550")  # Set the initial size of the window
 style = Style(theme="flatly")  # Set the ttkbootstrap theme for styling
 
-#Picture Background
-image_path = 'bfg1.jpg'
-img = Image.open(image_path)
-
 # Create a frame for entering the name
 name_frame = ttk.Frame(root)
 name_frame.pack()
@@ -237,7 +233,6 @@ qs_label.pack_forget()
 choice_btns = []
 for i in range(4):
     button = ttk.Button(root, command=lambda i=i: check_answer(i))
-    button.pack(pady=29)
     choice_btns.append(button)
     button.pack_forget()
 
@@ -250,7 +245,7 @@ next_btn.pack(padx=10)
 next_btn.pack_forget()
 
 # Configure styles for the UI elements
-style.configure("TLabel", font=("Helvetica", 20))
+style.configure("TLabel", font=("Helvetica", 23, ))
 style.configure("TButton", font=("Helvetica", 16))
 style.configure("TRadiobutton", font=("Helvetica", 20))
 style.configure("TButton", font=("Helvetica", 20))
